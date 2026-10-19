@@ -1,6 +1,6 @@
 {
   "name": "b2match-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Read-only MCP server for the B2match event and matchmaking platform",
   "type": "module",
   "main": "dist/cli.js",
