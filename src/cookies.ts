@@ -18,7 +18,7 @@ export function isB2matchAuthCookie(cookie: BrowserCookie, euid?: string): boole
   }
 
   const domain = (cookie.domain ?? "").replace(/^\./, "").toLowerCase();
-  if (domain && !domain.endsWith(AUTH_COOKIE_DOMAIN_SUFFIX)) {
+  if (domain && domain !== AUTH_COOKIE_DOMAIN_SUFFIX && !domain.endsWith(`.${AUTH_COOKIE_DOMAIN_SUFFIX}`)) {
     return false;
   }
 
