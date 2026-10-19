@@ -62,7 +62,7 @@ describe("AuthStore", () => {
     expect(await store.read()).toBeNull();
   });
 
-  it("reports empty keychain secret as keychain-unreadable", async () => {
+  it("reports empty keychain secret as keychain-unreadable when no file token exists", async () => {
     const backend: SecretBackend = {
       kind: "macos-keychain",
       get: async () => "",
@@ -77,6 +77,63 @@ describe("AuthStore", () => {
     });
     expect(status.error).toMatch(/empty/i);
     expect(status.hint).toMatch(/login/i);
+  });
+
+  it("falls back to a valid file token when the keychain item is empty", async () => {
+    const backend: SecretBackend = {
+      kind: "macos-keychain",
+      get: async () => "",
+      set: async () => undefined,
+      delete: async () => undefined
+    };
+    // Write a usable file token without going through save() (which would try keychain).
+    const { writeFile, mkdir } = await import("node:fs/promises");
+    await mkdir(dir, { recursive: true });
+    await writeFile(
+      authFilePath(dir),
+      JSON.stringify({
+        token: "file-token",
+        obtainedVia: "paste",
+        savedAt: "2026-01-01T00:00:00.000Z"
+      }) + "\n",
+      { mode: 0o600 }
+    );
+
+    const store = new AuthStore(dir, backend);
+    const status = await store.status();
+    expect(status.loggedIn).toBe(true);
+    expect(status.source).toBe("file");
+    expect(status.warning).toMatch(/empty/i);
+    expect(status.warning).toMatch(/using file token/i);
+    expect(status.error).toBeUndefined();
+
+    const read = await store.read();
+    expect(read?.source).toBe("file");
+    expect(read?.record.token).toBe("file-token");
+  });
+
+  it("falls back to a valid file token when the keychain secret is corrupt", async () => {
+    const backend: SecretBackend = {
+      kind: "macos-keychain",
+      get: async () => "not-json-at-all",
+      set: async () => undefined,
+      delete: async () => undefined
+    };
+    const { writeFile, mkdir } = await import("node:fs/promises");
+    await mkdir(dir, { recursive: true });
+    await writeFile(
+      authFilePath(dir),
+      JSON.stringify({
+        token: "file-token-2",
+        obtainedVia: "paste",
+        savedAt: "2026-01-01T00:00:00.000Z"
+      }) + "\n",
+      { mode: 0o600 }
+    );
+
+    const status = await new AuthStore(dir, backend).status();
+    expect(status).toMatchObject({ loggedIn: true, source: "file" });
+    expect(status.warning).toMatch(/not valid JSON/i);
   });
 
   it("falls back to the 0600 file when keychain read-back mismatches", async () => {
