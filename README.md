@@ -177,7 +177,7 @@ If a token is a JWT, the CLI records its `exp` claim as `expiresAt`. B2match als
 - **Google blocks the window:** finish sign-in in the dedicated window if possible; otherwise use `--paste`.
 - **Timeout / 404 after Google:** the CLI also reads a JWT from the event tab URL if Chrome 404s before a cookie is set. Finish sign-in and wait; or use `--paste`.
 - **Keychain prompt denied:** run `b2match-mcp logout`, then `login` again and approve the prompt; or set `B2MATCH_MCP_DISABLE_KEYCHAIN=1` to use the private file fallback.
-- **`status` shows `keychain-unreadable`:** the Keychain item is empty or corrupt. Run `b2match-mcp logout` then `login` again. If it keeps failing, set `B2MATCH_MCP_DISABLE_KEYCHAIN=1` before login to force the file fallback.
+- **`status` shows `keychain-unreadable`:** the Keychain item is empty or corrupt and no usable `auth.json` was found. Run `b2match-mcp logout` then `login` again. If a file token still works, `status` uses `source: "file"` and sets a `warning` about the Keychain item instead.
 - **Wrong/expired token:** run `b2match-mcp logout`, sign in again, and repeat `login`.
 
 ## Tools

@@ -24,6 +24,11 @@ export interface AuthState {
   /** Present when source is keychain-unreadable. Never includes the secret. */
   error?: string;
   hint?: string;
+  /**
+   * Set when a usable file token is returned despite a broken keychain item.
+   * Never includes the secret. Surfaced by CLI `status` and MCP `auth_status`.
+   */
+  warning?: string;
 }
 
 export function configDir(): string {
@@ -181,18 +186,15 @@ export class AuthStore {
       };
     }
 
+    let keychainProblem: { error: string } | undefined;
+
     if (this.backend) {
       try {
         const password = await this.backend.get();
         if (password === null) {
           // Not found — check file below.
         } else if (!password.trim()) {
-          return {
-            loggedIn: false,
-            source: "keychain-unreadable",
-            error: "macOS Keychain item exists but the secret is empty",
-            hint: KEYCHAIN_REREAD_HINT
-          };
+          keychainProblem = { error: "macOS Keychain item exists but the secret is empty" };
         } else {
           try {
             const record = JSON.parse(password) as StoredAuth;
@@ -205,29 +207,19 @@ export class AuthStore {
               obtainedVia: record.obtainedVia
             };
           } catch {
-            return {
-              loggedIn: false,
-              source: "keychain-unreadable",
-              error: "macOS Keychain secret is not valid JSON metadata",
-              hint: KEYCHAIN_REREAD_HINT
-            };
+            keychainProblem = { error: "macOS Keychain secret is not valid JSON metadata" };
           }
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        return {
-          loggedIn: false,
-          source: "keychain-unreadable",
-          error: message,
-          hint: KEYCHAIN_REREAD_HINT
-        };
+        keychainProblem = { error: message };
       }
     }
 
     try {
       const text = await readFile(authFilePath(this.dir), "utf8");
       const record = JSON.parse(text) as StoredAuth;
-      return {
+      const state: AuthState = {
         loggedIn: !isExpired(record.expiresAt),
         source: "file",
         expiresAt: record.expiresAt,
@@ -235,7 +227,19 @@ export class AuthStore {
         loginEventId: record.loginEventId,
         obtainedVia: record.obtainedVia
       };
+      if (keychainProblem) {
+        state.warning = `${keychainProblem.error}; using file token instead. ${KEYCHAIN_REREAD_HINT}`;
+      }
+      return state;
     } catch {
+      if (keychainProblem) {
+        return {
+          loggedIn: false,
+          source: "keychain-unreadable",
+          error: keychainProblem.error,
+          hint: KEYCHAIN_REREAD_HINT
+        };
+      }
       return { loggedIn: false, source: "none" };
     }
   }
