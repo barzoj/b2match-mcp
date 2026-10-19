@@ -249,7 +249,7 @@ The smoke test is skipped unless both environment variables are set.
 
 ## Publishing
 
-Releases are cut by Release Please from Conventional Commits on `main`. The same workflow (`.github/workflows/release-please.yml`) publishes with `npm publish --provenance --access public` when a release is created. Provenance requires a public repo. Configure npm trusted publishing against `release-please.yml`. `NPM_TOKEN` is a documented fallback only. `.github/workflows/publish.yml` is a manual republish trigger.
+Releases are cut by Release Please from Conventional Commits on `main`. The same workflow (`.github/workflows/release-please.yml`) publishes with `npm publish --provenance --access public` when a release is created (OIDC trusted publishing only — no `NODE_AUTH_TOKEN`). Provenance requires a public repo. Configure npm trusted publishing against workflow `release-please.yml`. To republish an existing tag: `gh workflow run release-please.yml -f publish_tag=vX.Y.Z`. `.github/workflows/publish.yml` is a tip-of-branch manual republish only.
 
 ## Verification status
 

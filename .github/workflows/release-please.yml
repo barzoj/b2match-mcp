@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      publish_tag:
+        description: "Git tag to publish with OIDC (e.g. v0.1.1). Required for manual publish."
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -11,6 +17,7 @@ permissions:
 
 jobs:
   release-please:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
@@ -23,7 +30,7 @@ jobs:
 
   publish:
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
+    if: github.event_name == 'push' && needs.release-please.outputs.release_created == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -35,6 +42,46 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
           registry-url: https://registry.npmjs.org
+      # Trusted publishing requires npm >= 11.5.1
+      - run: npm install -g npm@latest
+      - run: npm --version
+      - run: npm ci
+      - run: npm run prepublishOnly
+      - name: Skip if version already on npm
+        id: published
+        run: |
+          NAME="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          if npm view "${NAME}@${VERSION}" version >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Package ${NAME}@${VERSION} already published; skipping npm publish."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish
+        if: steps.published.outputs.exists != 'true'
+        # OIDC trusted publishing only — do not set NODE_AUTH_TOKEN (even empty).
+        run: npm publish --provenance --access public
+
+  # Manual publish of an existing tag via OIDC (validates npm trusted publisher
+  # bound to this workflow file). Use: gh workflow run release-please.yml -f publish_tag=vX.Y.Z
+  publish-tag:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.publish_tag }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@latest
+      - run: npm --version
       - run: npm ci
       - run: npm run prepublishOnly
       - name: Skip if version already on npm
@@ -51,6 +98,3 @@ jobs:
       - name: Publish
         if: steps.published.outputs.exists != 'true'
         run: npm publish --provenance --access public
-        env:
-          # Preferred: npm trusted publishing (OIDC). Fallback: repository secret NPM_TOKEN.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
