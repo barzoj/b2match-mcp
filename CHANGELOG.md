@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Release Please updates this file from Conventional Commits when a release is cut.
 
+## [0.1.1](https://github.com/barzoj/b2match-mcp/compare/v0.1.0...v0.1.1) (2026-10-19)
+
+
+### Miscellaneous Chores
+
+* remove first-release release-as pin ([#10](https://github.com/barzoj/b2match-mcp/issues/10)) ([6e5054a](https://github.com/barzoj/b2match-mcp/commit/6e5054a070983a50f7db125e1f573c640e3d77c7))
+
 ## [0.1.0](https://github.com/barzoj/b2match-mcp/compare/v0.1.0...v0.1.0) (2026-10-19)
 
 
