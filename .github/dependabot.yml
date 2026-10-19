@@ -4,6 +4,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # TypeScript majors (e.g. 7.x) break the build; upgrade them manually.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
     groups:
       production-npm:
         dependency-type: production
