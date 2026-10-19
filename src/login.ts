@@ -114,7 +114,9 @@ async function saveValidatedToken(
     return { storage, obtainedVia };
   } catch (error) {
     if (error instanceof B2matchAuthError) {
-      throw new Error("The provided session token was rejected by B2match. Sign in again and retry.");
+      throw new Error("The provided session token was rejected by B2match. Sign in again and retry.", {
+        cause: error
+      });
     }
     throw error;
   }

@@ -1,5 +1,6 @@
-import { afterEach, describe, expect, it } from "vitest";
-import { AUTH_INVALID_MESSAGE } from "../src/client.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { AUTH_INVALID_MESSAGE, B2matchClient } from "../src/client.js";
+import { AuthStore } from "../src/auth.js";
 import { CONVERSATION, NOTIFICATION_COUNTERS, NOTIFICATIONS } from "../src/queries.js";
 import {
   assertNoUnacknowledgedSideEffectReads,
@@ -71,11 +72,19 @@ describe("graphql_read side-effect field guard", () => {
     expect(() => assertNoUnacknowledgedSideEffectReads(CONVERSATION)).not.toThrow();
     expect(() => assertNoUnacknowledgedSideEffectReads(NOTIFICATIONS)).not.toThrow();
   });
+
+  it("enforces the guard on the shared query path before any network call", async () => {
+    delete process.env[SIDE_EFFECT_READS_ENV];
+    const fetchImpl = vi.fn();
+    const client = new B2matchClient(new AuthStore(), { fetchImpl: fetchImpl as unknown as typeof fetch });
+    await expect(client.query(CONVERSATION, {}, { cache: false })).rejects.toBeInstanceOf(UnsafeGraphQLOperationError);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
 });
 
 describe("invalid-token error text", () => {
   it("does not wrap the login command in leftover backticks", () => {
-    expect(AUTH_INVALID_MESSAGE).toContain("b2match-mcp login");
+    expect(AUTH_INVALID_MESSAGE).toContain("b2match-mcp login <event-url>");
     expect(AUTH_INVALID_MESSAGE).not.toMatch(/`/);
   });
 });

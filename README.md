@@ -1,8 +1,16 @@
 # b2match-mcp
 
+[![CI](https://github.com/barzoj/b2match-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/barzoj/b2match-mcp/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/barzoj/b2match-mcp/graph/badge.svg)](https://codecov.io/gh/barzoj/b2match-mcp)
+[![npm version](https://img.shields.io/npm/v/b2match-mcp)](https://www.npmjs.com/package/b2match-mcp)
+[![License: MIT](https://img.shields.io/npm/l/b2match-mcp)](LICENSE)
+[![Node.js](https://img.shields.io/node/v/b2match-mcp)](https://nodejs.org/)
+
 Read-only MCP server for the [B2match](https://www.b2match.com/) event and matchmaking platform.
 
-This package is designed to be run locally by the user via `npx` and stdio MCP transport. It is unofficial and uses B2match's undocumented web GraphQL API, so field availability can change without notice.
+This package is designed to be run locally by the user via `npx` and stdio MCP transport.
+
+**Disclaimer:** This project is unofficial and is not affiliated with, endorsed by, or supported by B2match. It uses B2match's undocumented web GraphQL API, so field availability can change without notice. Use it in accordance with [B2match's Terms of Service](https://www.b2match.com/) and GDPR. Participant profiles can be other people's personal data — keep exports local, respect each event's visibility rules, and do not harvest or republish personal data.
 
 ## Read-only and privacy guarantees
 
@@ -13,8 +21,7 @@ This package is designed to be run locally by the user via `npx` and stdio MCP t
 - It makes no external calls other than `https://api.b2match.com/v4/query` and the B2match Google login URL opened by the CLI.
 - No telemetry or analytics are collected by this package.
 - Tokens are never printed by tools or status commands.
-
-Participant data can be personal data under GDPR. Keep exports local, respect each event's visibility rules, and avoid bulk harvesting.
+- Tokens are stored in the OS keychain when available, otherwise in a `0600` config file.
 
 ## Install / run
 
@@ -53,6 +60,22 @@ node dist/cli.js
 {
   "mcpServers": {
     "b2match": {
+      "command": "npx",
+      "args": ["-y", "b2match-mcp"]
+    }
+  }
+}
+```
+
+### VS Code
+
+Add to `.vscode/mcp.json` or user MCP settings:
+
+```json
+{
+  "servers": {
+    "b2match": {
+      "type": "stdio",
       "command": "npx",
       "args": ["-y", "b2match-mcp"]
     }
@@ -212,6 +235,8 @@ npm run build
 npm test
 ```
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for lint, format, coverage, Conventional Commits, and the read-only guard.
+
 Live smoke test against a public event (opt-in, not run in CI):
 
 ```bash
@@ -219,6 +244,10 @@ B2MATCH_LIVE_SMOKE=1 B2MATCH_SMOKE_EVENT='https://www.b2match.com/e/<event-slug>
 ```
 
 The smoke test is skipped unless both environment variables are set.
+
+## Publishing
+
+Releases are cut by Release Please from Conventional Commits on `main`. The same workflow (`.github/workflows/release-please.yml`) publishes with `npm publish --provenance --access public` when a release is created. Provenance requires a public repo. Configure npm trusted publishing against `release-please.yml`. `NPM_TOKEN` is a documented fallback only. `.github/workflows/publish.yml` is a manual republish trigger. After the first 0.1.0 release, remove `"release-as": "0.1.0"` from `release-please-config.json`.
 
 ## Verification status
 

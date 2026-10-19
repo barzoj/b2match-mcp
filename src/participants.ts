@@ -17,7 +17,8 @@ export function compactParticipant(node: unknown): CompactParticipant {
 
   const firstName = stringValue(user.firstName);
   const lastName = stringValue(user.lastName);
-  const name = [firstName, lastName].filter(Boolean).join(" ") || stringValue(record.organisationName) || stringValue(record.id);
+  const name =
+    [firstName, lastName].filter(Boolean).join(" ") || stringValue(record.organisationName) || stringValue(record.id);
 
   return {
     id: stringValue(record.id),

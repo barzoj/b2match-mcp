@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  AUTH_COOKIE_FALLBACK,
-  AUTH_COOKIE_PREFIX,
-  eventAuthCookieName,
-  pickAuthCookie
-} from "../src/cookies.js";
+import { AUTH_COOKIE_FALLBACK, AUTH_COOKIE_PREFIX, eventAuthCookieName, pickAuthCookie } from "../src/cookies.js";
 
 describe("pickAuthCookie", () => {
   const euid = "example-event-2026";
@@ -22,9 +17,9 @@ describe("pickAuthCookie", () => {
   });
 
   it("accepts the fallback cookie name", () => {
-    expect(
-      pickAuthCookie([{ name: AUTH_COOKIE_FALLBACK, value: "fallback", domain: "www.b2match.com" }], euid)
-    ).toBe("fallback");
+    expect(pickAuthCookie([{ name: AUTH_COOKIE_FALLBACK, value: "fallback", domain: "www.b2match.com" }], euid)).toBe(
+      "fallback"
+    );
   });
 
   it("ignores cookies from other domains", () => {

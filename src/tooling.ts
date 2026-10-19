@@ -74,4 +74,3 @@ export function defaultRouteVariables(euid: string, path: string, first = 20, af
     useClientCache: false
   };
 }
-

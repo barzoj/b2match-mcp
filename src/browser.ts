@@ -40,10 +40,7 @@ export interface BrowserExecutable {
   appPath?: string;
 }
 
-export function findMacBrowserApps(
-  exists: (path: string) => boolean = existsSync,
-  home = homedir()
-): string[] {
+export function findMacBrowserApps(exists: (path: string) => boolean = existsSync, home = homedir()): string[] {
   const roots = ["/Applications", `${home.replace(/\/$/, "")}/Applications`];
   const apps: string[] = [];
   for (const root of roots) {
@@ -107,11 +104,7 @@ export function findBrowserExecutable(
   return undefined;
 }
 
-export function buildChromiumLaunchArgs(options: {
-  profileDir: string;
-  port: number;
-  url: string;
-}): string[] {
+export function buildChromiumLaunchArgs(options: { profileDir: string; port: number; url: string }): string[] {
   return [
     `--user-data-dir=${options.profileDir}`,
     `--remote-debugging-port=${options.port}`,

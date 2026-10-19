@@ -2,7 +2,9 @@
 
 ## Reporting a vulnerability
 
-Please report security issues privately to the repository owner through GitHub's private vulnerability reporting flow when it is enabled. If that is not available, open a minimal GitHub issue that says you have a security report to share, without including secrets, tokens, cookies, personal data, or exploit details.
+Please report security issues through [GitHub private vulnerability reporting](https://github.com/barzoj/b2match-mcp/security/advisories/new) (Settings → Code security → Private vulnerability reporting). If that is not enabled yet, open a minimal GitHub issue that says you have a security report to share, without including secrets, tokens, cookies, personal data, or exploit details.
+
+Do not send vulnerability reports to a personal email address.
 
 ## Token handling
 

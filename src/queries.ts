@@ -980,7 +980,14 @@ export const MY_MEETINGS_AND_AVAILABILITY = /* GraphQL */ `
 `;
 
 export const FIND_MEETING_SLOTS = /* GraphQL */ `
-  query DaysAndTimeslot($euid: String!, $participantIds: [ID!]!, $day: Time = "", $duration: MeetingDuration, $meetingId: ID, $isLtm: Boolean! = false) {
+  query DaysAndTimeslot(
+    $euid: String!
+    $participantIds: [ID!]!
+    $day: Time = ""
+    $duration: MeetingDuration
+    $meetingId: ID
+    $isLtm: Boolean! = false
+  ) {
     eventByEuidV2(euid: $euid) {
       ... on Event {
         id
@@ -988,7 +995,8 @@ export const FIND_MEETING_SLOTS = /* GraphQL */ `
           id
           begin
           end
-          day(participantIds: $participantIds, day: $day, duration: $duration, meetingId: $meetingId) @include(if: $isLtm) {
+          day(participantIds: $participantIds, day: $day, duration: $duration, meetingId: $meetingId)
+            @include(if: $isLtm) {
             day
             timeslots {
               nodes {
@@ -1123,21 +1131,66 @@ export const CONVERSATIONS = /* GraphQL */ `
       id
       participantByEuid(euid: $euid) {
         id
-        badges { unreadConversations }
+        badges {
+          unreadConversations
+        }
         conversations(first: $first, after: $after) {
-          pageInfo { hasNextPage endCursor }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
           nodes {
             id
             url
             updatedAt
             viewerHasUnreadMessages
-            otherMembers { id profileUrl organisationName user { id firstName lastName jobPosition } }
+            otherMembers {
+              id
+              profileUrl
+              organisationName
+              user {
+                id
+                firstName
+                lastName
+                jobPosition
+              }
+            }
             lastMessageV2 {
               __typename
-              ... on Message { id body createdAt viewerIsAuthor authorV2 { id user { firstName lastName } } }
-              ... on SystemMessageParticipantsAdded { id createdAt viewerIsAuthor }
-              ... on UploadMessageFile { id createdAt viewerIsAuthor file { filename } }
-              ... on UploadMessageImage { id createdAt viewerIsAuthor image { filename } }
+              ... on Message {
+                id
+                body
+                createdAt
+                viewerIsAuthor
+                authorV2 {
+                  id
+                  user {
+                    firstName
+                    lastName
+                  }
+                }
+              }
+              ... on SystemMessageParticipantsAdded {
+                id
+                createdAt
+                viewerIsAuthor
+              }
+              ... on UploadMessageFile {
+                id
+                createdAt
+                viewerIsAuthor
+                file {
+                  filename
+                }
+              }
+              ... on UploadMessageImage {
+                id
+                createdAt
+                viewerIsAuthor
+                image {
+                  filename
+                }
+              }
             }
           }
         }
@@ -1154,15 +1207,60 @@ export const CONVERSATION = /* GraphQL */ `
       createdAt
       updatedAt
       viewerHasUnreadMessages
-      otherMembers { id profileUrl organisationName user { id firstName lastName jobPosition } }
+      otherMembers {
+        id
+        profileUrl
+        organisationName
+        user {
+          id
+          firstName
+          lastName
+          jobPosition
+        }
+      }
       messagesV2(first: $first, after: $after) {
-        pageInfo { hasNextPage endCursor }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
         nodes {
           __typename
-          ... on Message { id body createdAt viewerIsAuthor authorV2 { id user { firstName lastName } } }
-          ... on SystemMessageParticipantsAdded { id createdAt viewerIsAuthor }
-          ... on UploadMessageFile { id createdAt viewerIsAuthor file { filename url } }
-          ... on UploadMessageImage { id createdAt viewerIsAuthor image { filename url } }
+          ... on Message {
+            id
+            body
+            createdAt
+            viewerIsAuthor
+            authorV2 {
+              id
+              user {
+                firstName
+                lastName
+              }
+            }
+          }
+          ... on SystemMessageParticipantsAdded {
+            id
+            createdAt
+            viewerIsAuthor
+          }
+          ... on UploadMessageFile {
+            id
+            createdAt
+            viewerIsAuthor
+            file {
+              filename
+              url
+            }
+          }
+          ... on UploadMessageImage {
+            id
+            createdAt
+            viewerIsAuthor
+            image {
+              filename
+              url
+            }
+          }
         }
       }
     }
@@ -1175,7 +1273,10 @@ export const NOTIFICATION_COUNTERS = /* GraphQL */ `
       id
       participantByEuid(euid: $euid) {
         id
-        notificationsCounter { unread unseen }
+        notificationsCounter {
+          unread
+          unseen
+        }
       }
     }
   }
@@ -1187,9 +1288,15 @@ export const NOTIFICATIONS = /* GraphQL */ `
       id
       participantByEuid(euid: $euid) {
         id
-        notificationsCounter { unread unseen }
+        notificationsCounter {
+          unread
+          unseen
+        }
         notifications(first: $first, after: $after, useClientCache: $useClientCache) {
-          pageInfo { hasNextPage endCursor }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
           nodes {
             id
             read
@@ -1197,15 +1304,99 @@ export const NOTIFICATIONS = /* GraphQL */ `
             createdAt
             content {
               __typename
-              ... on MeetingRequestNotificationContent { meeting { id viewersViewMeetingUrl otherMember { participant { id organisationName user { firstName lastName } } } } }
-              ... on MeetingAcceptNotificationContent { meeting { id status viewersViewMeetingUrl otherMember { participant { id organisationName user { firstName lastName } } } } }
-              ... on MeetingCancelNotificationContent { meeting { id status viewersViewMeetingUrl otherMember { participant { id organisationName user { firstName lastName } } } } }
-              ... on MeetingRescheduleProposedNotificationContent { meeting { id viewersViewMeetingUrl } }
-              ... on MeetingRescheduleNotificationContent { meeting { id status viewersViewMeetingUrl } }
-              ... on MeetingReminderNotificationContent { meeting { id status viewersViewMeetingUrl online joinUrl } }
-              ... on MeetingFeedbackNotificationContent { meeting { id viewersViewMeetingUrl viewerShouldRate } }
-              ... on MeetingUpdateNotificationContent { meeting { id viewersViewMeetingUrl } }
-              ... on AnnouncementSentNotificationContent { announcement { id subject body sentAt } }
+              ... on MeetingRequestNotificationContent {
+                meeting {
+                  id
+                  viewersViewMeetingUrl
+                  otherMember {
+                    participant {
+                      id
+                      organisationName
+                      user {
+                        firstName
+                        lastName
+                      }
+                    }
+                  }
+                }
+              }
+              ... on MeetingAcceptNotificationContent {
+                meeting {
+                  id
+                  status
+                  viewersViewMeetingUrl
+                  otherMember {
+                    participant {
+                      id
+                      organisationName
+                      user {
+                        firstName
+                        lastName
+                      }
+                    }
+                  }
+                }
+              }
+              ... on MeetingCancelNotificationContent {
+                meeting {
+                  id
+                  status
+                  viewersViewMeetingUrl
+                  otherMember {
+                    participant {
+                      id
+                      organisationName
+                      user {
+                        firstName
+                        lastName
+                      }
+                    }
+                  }
+                }
+              }
+              ... on MeetingRescheduleProposedNotificationContent {
+                meeting {
+                  id
+                  viewersViewMeetingUrl
+                }
+              }
+              ... on MeetingRescheduleNotificationContent {
+                meeting {
+                  id
+                  status
+                  viewersViewMeetingUrl
+                }
+              }
+              ... on MeetingReminderNotificationContent {
+                meeting {
+                  id
+                  status
+                  viewersViewMeetingUrl
+                  online
+                  joinUrl
+                }
+              }
+              ... on MeetingFeedbackNotificationContent {
+                meeting {
+                  id
+                  viewersViewMeetingUrl
+                  viewerShouldRate
+                }
+              }
+              ... on MeetingUpdateNotificationContent {
+                meeting {
+                  id
+                  viewersViewMeetingUrl
+                }
+              }
+              ... on AnnouncementSentNotificationContent {
+                announcement {
+                  id
+                  subject
+                  body
+                  sentAt
+                }
+              }
             }
           }
         }

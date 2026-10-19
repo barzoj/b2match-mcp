@@ -1,6 +1,4 @@
-export type EventIdentifier =
-  | { kind: "id"; id: string }
-  | { kind: "euid"; euid: string };
+export type EventIdentifier = { kind: "id"; id: string } | { kind: "euid"; euid: string };
 
 const EUID_RE = /^[a-z0-9][a-z0-9-]{1,180}$/i;
 
@@ -23,9 +21,7 @@ export function parseEventIdentifier(input: string | number): EventIdentifier {
     return { kind: "euid", euid: raw.toLowerCase() };
   }
 
-  throw new Error(
-    "Event must be a numeric id, a b2match event slug, or a b2match event URL."
-  );
+  throw new Error("Event must be a numeric id, a b2match event slug, or a b2match event URL.");
 }
 
 function parseEventUrl(raw: string): EventIdentifier | null {

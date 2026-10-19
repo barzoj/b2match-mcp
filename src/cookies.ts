@@ -31,7 +31,9 @@ export function isB2matchAuthCookie(cookie: BrowserCookie, euid?: string): boole
 
 export function pickAuthCookie(cookies: BrowserCookie[], euid?: string): string | undefined {
   if (euid) {
-    const exact = cookies.find((cookie) => cookie.name === eventAuthCookieName(euid) && isB2matchAuthCookie(cookie, euid));
+    const exact = cookies.find(
+      (cookie) => cookie.name === eventAuthCookieName(euid) && isB2matchAuthCookie(cookie, euid)
+    );
     if (exact?.value) {
       return exact.value;
     }

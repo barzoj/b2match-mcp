@@ -1,0 +1,34 @@
+name: Feature request
+description: Suggest a read-only improvement
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This project is **read-only**. Write operations (booking meetings, sending messages, marking notifications read, profile-view tracking) will not be accepted.
+
+        **Never paste B2match session tokens or cookies.**
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that the current tools do not cover?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed read-only behavior
+      description: Describe the query or tool. Do not request mutations.
+    validations:
+      required: true
+  - type: checkboxes
+    id: readonly
+    attributes:
+      label: Scope
+      options:
+        - label: This request is query-only and does not require writing data to B2match.
+          required: true
+        - label: I have not included tokens, cookies, or other people's personal data.
+          required: true

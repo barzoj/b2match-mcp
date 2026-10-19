@@ -72,14 +72,25 @@ export class B2matchApi {
     return this.client.query(MY_PARTICIPATION, { euid: resolved.euid }, { requireAuth: true, cache: true });
   }
 
-  async listParticipants(event: string, options: { first?: number; after?: string; query?: string; detail?: boolean } = {}) {
+  async listParticipants(
+    event: string,
+    options: { first?: number; after?: string; query?: string; detail?: boolean } = {}
+  ) {
     const resolved = await this.client.resolveEvent(event);
     const data = await this.client.query<Record<string, unknown>>(
       LIST_PARTICIPANTS,
-      { eventId: resolved.id, euid: resolved.euid, query: options.query ?? "", ...pageVars(options.first, options.after) },
+      {
+        eventId: resolved.id,
+        euid: resolved.euid,
+        query: options.query ?? "",
+        ...pageVars(options.first, options.after)
+      },
       { cache: true }
     );
-    const connection = (((data.event as Record<string, unknown> | undefined)?.participants ?? {}) as Record<string, unknown>);
+    const connection = ((data.event as Record<string, unknown> | undefined)?.participants ?? {}) as Record<
+      string,
+      unknown
+    >;
     const nodes = Array.isArray(connection.nodes) ? connection.nodes : [];
     return {
       event: { id: resolved.id, euid: resolved.euid, title: resolved.title },
@@ -110,7 +121,10 @@ export class B2matchApi {
     const resolved = await this.client.resolveEvent(event);
     const expected = DETAIL_TYPENAMES.opportunities;
     const sectionPaths = path?.trim() ? [] : candidateSectionPaths(resolved.raw, "opportunities");
-    const types = sectionPaths.length > 0 ? await this.peekRoutes(resolved.euid, sectionPaths) : new Map<string, string | undefined>();
+    const types =
+      sectionPaths.length > 0
+        ? await this.peekRoutes(resolved.euid, sectionPaths)
+        : new Map<string, string | undefined>();
     const section = sectionPaths.find((candidate) => types.get(candidate) === SECTION_TYPENAMES.opportunities);
     const candidates = opportunityDetailPaths(section, opportunityId, path);
     let last: unknown;
@@ -155,9 +169,16 @@ export class B2matchApi {
 
   async mySchedule(event: string, includePdfLink = false) {
     const resolved = await this.client.resolveEvent(event);
-    const data = await this.client.query<Record<string, unknown>>(MY_SCHEDULE, { euid: resolved.euid }, { requireAuth: true, cache: false });
+    const data = await this.client.query<Record<string, unknown>>(
+      MY_SCHEDULE,
+      { euid: resolved.euid },
+      { requireAuth: true, cache: false }
+    );
     if (!includePdfLink) {
-      const participant = (((data.viewer as Record<string, unknown> | undefined)?.participantByEuid ?? {}) as Record<string, unknown>);
+      const participant = ((data.viewer as Record<string, unknown> | undefined)?.participantByEuid ?? {}) as Record<
+        string,
+        unknown
+      >;
       delete participant.pdfAgendaUrl;
     }
     return data;
@@ -174,8 +195,8 @@ export class B2matchApi {
       { euid: resolved.euid },
       { requireAuth: true, cache: false }
     );
-    const viewer = ((data.viewer ?? {}) as Record<string, unknown>);
-    const participant = ((viewer.participantByEuid ?? {}) as Record<string, unknown>);
+    const viewer = (data.viewer ?? {}) as Record<string, unknown>;
+    const participant = (viewer.participantByEuid ?? {}) as Record<string, unknown>;
     if (status) {
       return { [status]: (participant.meetings as Record<string, unknown>)?.[status] };
     }
@@ -201,7 +222,10 @@ export class B2matchApi {
       { euid: resolved.euid },
       { requireAuth: true, cache: false }
     );
-    const participant = (((data.viewer as Record<string, unknown> | undefined)?.participantByEuid ?? {}) as Record<string, unknown>);
+    const participant = ((data.viewer as Record<string, unknown> | undefined)?.participantByEuid ?? {}) as Record<
+      string,
+      unknown
+    >;
     return {
       availability: detail ? participant.availability : compactAvailability(participant.availability),
       isAvailable: participant.isAvailable,
@@ -236,7 +260,11 @@ export class B2matchApi {
 
   async listConversations(event: string, options: { first?: number; after?: string } = {}) {
     const resolved = await this.client.resolveEvent(event);
-    return this.client.query(CONVERSATIONS, { euid: resolved.euid, ...pageVars(options.first, options.after) }, { requireAuth: true, cache: false });
+    return this.client.query(
+      CONVERSATIONS,
+      { euid: resolved.euid, ...pageVars(options.first, options.after) },
+      { requireAuth: true, cache: false }
+    );
   }
 
   async getConversation(conversationId: string) {
@@ -281,7 +309,12 @@ export class B2matchApi {
     const resolved = await this.client.resolveEvent(event);
     const expected = SECTION_TYPENAMES[section];
     if (options.path?.trim()) {
-      return this.route(resolved.euid, resolveSectionPath(resolved.raw, section, options.path), options.first, options.after);
+      return this.route(
+        resolved.euid,
+        resolveSectionPath(resolved.raw, section, options.path),
+        options.first,
+        options.after
+      );
     }
 
     const paths = candidateSectionPaths(resolved.raw, section);

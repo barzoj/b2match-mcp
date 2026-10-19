@@ -40,9 +40,14 @@ describe("B2matchClient auth policy", () => {
     await store.save({ token: "stored-token", obtainedVia: "paste", loginEventId: "12345" });
     const fetchImpl = vi
       .fn()
-      .mockResolvedValueOnce(new Response("invalid authentication", { status: 401, headers: { "content-type": "text/plain" } }))
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ data: { ok: true } }), { status: 200, headers: { "content-type": "application/json" } })
+        new Response("invalid authentication", { status: 401, headers: { "content-type": "text/plain" } })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ data: { ok: true } }), {
+          status: 200,
+          headers: { "content-type": "application/json" }
+        })
       );
 
     const client = new B2matchClient(store, { fetchImpl: fetchImpl as unknown as typeof fetch });
@@ -60,17 +65,21 @@ describe("B2matchClient auth policy", () => {
     expect(JSON.parse(await readFile(join(dir, "auth.json"), "utf8")).token).toBe("stored-token");
   });
 
-  it("retries once on a transient network TypeError", async () => {
+  it("retries transient network TypeErrors with short backoff", async () => {
     const fetchImpl = vi
       .fn()
       .mockRejectedValueOnce(new TypeError("fetch failed"))
+      .mockRejectedValueOnce(new TypeError("fetch failed"))
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ data: { ok: true } }), { status: 200, headers: { "content-type": "application/json" } })
+        new Response(JSON.stringify({ data: { ok: true } }), {
+          status: 200,
+          headers: { "content-type": "application/json" }
+        })
       );
     const client = new B2matchClient(new AuthStore(dir), { fetchImpl: fetchImpl as unknown as typeof fetch });
 
     await expect(client.query("query Public { ok }", {}, { cache: false })).resolves.toEqual({ ok: true });
-    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
   });
 
   it("does not retry non-network errors", async () => {

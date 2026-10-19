@@ -10,11 +10,7 @@ export interface CommandResult {
   stderr: string;
 }
 
-export type CommandRunner = (
-  command: string,
-  args: string[],
-  input?: string
-) => Promise<CommandResult>;
+export type CommandRunner = (command: string, args: string[], input?: string) => Promise<CommandResult>;
 
 export interface SecretBackend {
   readonly kind: "macos-keychain" | "linux-secret-tool" | "file";
@@ -62,10 +58,7 @@ export function macOSSecurityCommands(service = KEYCHAIN_SERVICE, account = KEYC
 export function linuxSecretToolCommands(service = KEYCHAIN_SERVICE, account = KEYCHAIN_ACCOUNT) {
   return {
     get: ["secret-tool", ["lookup", "service", service, "account", account]] as const,
-    set: [
-      "secret-tool",
-      ["store", "--label", service, "service", service, "account", account]
-    ] as const,
+    set: ["secret-tool", ["store", "--label", service, "service", service, "account", account]] as const,
     delete: ["secret-tool", ["clear", "service", service, "account", account]] as const
   };
 }

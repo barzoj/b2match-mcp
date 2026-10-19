@@ -60,10 +60,6 @@ describe("Linux secret-tool command construction", () => {
     const runner: CommandRunner = vi.fn(async () => ({ code: 0, stdout: "", stderr: "" }));
     await new LinuxSecretToolBackend(runner).set("linux-secret");
 
-    expect(runner).toHaveBeenCalledWith(
-      "secret-tool",
-      linuxSecretToolCommands().set[1],
-      "linux-secret\n"
-    );
+    expect(runner).toHaveBeenCalledWith("secret-tool", linuxSecretToolCommands().set[1], "linux-secret\n");
   });
 });

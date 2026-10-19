@@ -3,14 +3,15 @@ import { AuthStore, isExpired } from "./auth.js";
 import { parseEventIdentifier } from "./eventIdentifier.js";
 import { loginUsage } from "./invocation.js";
 import { EVENT_BY_EUID, EVENT_ID_LOOKUP } from "./queries.js";
-import { assertReadOnlyGraphQL } from "./queryGuard.js";
+import { assertNoUnacknowledgedSideEffectReads, assertReadOnlyGraphQL } from "./queryGuard.js";
 
 const API_URL = "https://api.b2match.com/v4/query";
 const CACHE_TTL_MS = 60_000;
 const MIN_REQUEST_INTERVAL_MS = 1_000;
+const NETWORK_RETRY_BACKOFF_MS = [250, 750];
 
 export const AUTH_MISSING_MESSAGE = `You are not logged in. Run ${loginUsage()} or set B2MATCH_TOKEN.`;
-export const AUTH_INVALID_MESSAGE = `B2match authentication is invalid or expired. Run ${loginUsage("")} again.`;
+export const AUTH_INVALID_MESSAGE = `B2match authentication is invalid or expired. Run ${loginUsage()} again.`;
 
 export class B2matchAuthError extends Error {
   constructor(
@@ -74,6 +75,7 @@ export class B2matchClient {
     options: GraphQLRequestOptions = {}
   ): Promise<T> {
     assertReadOnlyGraphQL(query);
+    assertNoUnacknowledgedSideEffectReads(query);
 
     const overrideToken = options.token?.trim();
     const auth = overrideToken ? null : await this.authStore.read();
@@ -147,11 +149,7 @@ export class B2matchClient {
     return normalizeEvent(eventNode);
   }
 
-  private async send<T>(
-    query: string,
-    variables: Record<string, unknown>,
-    token?: string
-  ): Promise<T> {
+  private async send<T>(query: string, variables: Record<string, unknown>, token?: string): Promise<T> {
     await this.throttle();
 
     const response = await this.fetchWithRetry(API_URL, {
@@ -193,17 +191,21 @@ export class B2matchClient {
   }
 
   // B2match's edge occasionally drops idle keep-alive connections ("fetch failed").
-  // Every request we send is a read-only query, so one retry is safe.
+  // Every request we send is a read-only query, so retries are safe.
   private async fetchWithRetry(url: string, init: RequestInit): Promise<Response> {
-    try {
-      return await this.fetchImpl(url, init);
-    } catch (error) {
-      if (!(error instanceof TypeError)) {
-        throw error;
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= NETWORK_RETRY_BACKOFF_MS.length; attempt += 1) {
+      try {
+        return await this.fetchImpl(url, init);
+      } catch (error) {
+        lastError = error;
+        if (!(error instanceof TypeError) || attempt === NETWORK_RETRY_BACKOFF_MS.length) {
+          throw error;
+        }
+        await delay(NETWORK_RETRY_BACKOFF_MS[attempt]);
       }
-      await this.throttle();
-      return this.fetchImpl(url, init);
     }
+    throw lastError;
   }
 
   private async throttle(): Promise<void> {
@@ -217,11 +219,12 @@ export class B2matchClient {
   }
 
   private cacheKey(query: string, variables: Record<string, unknown>, authenticated: boolean): string {
-    return crypto
-      .createHash("sha256")
-      .update(JSON.stringify({ query, variables, authenticated }))
-      .digest("hex");
+    return crypto.createHash("sha256").update(JSON.stringify({ query, variables, authenticated })).digest("hex");
   }
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function normalizeEvent(node: ResolvedEvent): ResolvedEvent {

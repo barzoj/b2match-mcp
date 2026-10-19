@@ -5,7 +5,11 @@ import { B2matchApi, ConversationNotFoundError, RouteNotFoundError } from "./api
 import { AuthStore } from "./auth.js";
 import { B2matchAuthError, B2matchClient } from "./client.js";
 import { SIDE_EFFECT_READS_ENV, conversationMessagesGate, notificationListGate } from "./sideEffects.js";
-import { assertNoUnacknowledgedSideEffectReads, assertReadOnlyGraphQL, UnsafeGraphQLOperationError } from "./queryGuard.js";
+import {
+  assertNoUnacknowledgedSideEffectReads,
+  assertReadOnlyGraphQL,
+  UnsafeGraphQLOperationError
+} from "./queryGuard.js";
 import { EventInput, PagingInput, authErrorResult, errorResult, notFoundResult, textResult } from "./tooling.js";
 
 const readOnlyAnnotations = {
@@ -23,24 +27,25 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
     version: "0.1.0"
   });
 
-  const authTool = <Args extends Record<string, unknown>, T>(
-    run: (args: Args) => Promise<T>
-  ) => async (args: Args) => {
-    try {
-      return textResult(await run(args));
-    } catch (error) {
-      if (error instanceof B2matchAuthError) {
-        return authErrorResult(error);
+  const authTool =
+    <Args extends Record<string, unknown>, T>(run: (args: Args) => Promise<T>) =>
+    async (args: Args) => {
+      try {
+        return textResult(await run(args));
+      } catch (error) {
+        if (error instanceof B2matchAuthError) {
+          return authErrorResult(error);
+        }
+        throw error;
       }
-      throw error;
-    }
-  };
+    };
 
   server.registerTool(
     "auth_status",
     {
       title: "B2match auth status",
-      description: "Show whether a local B2match token is available and, when valid, who it belongs to. Never returns the token.",
+      description:
+        "Show whether a local B2match token is available and, when valid, who it belongs to. Never returns the token.",
       annotations: readOnlyAnnotations
     },
     authTool(async () => {
@@ -75,7 +80,8 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
     "my_participation",
     {
       title: "Get my event participation",
-      description: "Fetch authenticated participant status, activation, permissions, organisation pages, and opportunities for one event.",
+      description:
+        "Fetch authenticated participant status, activation, permissions, organisation pages, and opportunities for one event.",
       inputSchema: EventInput.shape,
       annotations: readOnlyAnnotations
     },
@@ -86,7 +92,8 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
     "list_participants",
     {
       title: "List B2match participants",
-      description: "List public participants as a compact summary. Set detail=true for the fuller record; use get_participant for one profile.",
+      description:
+        "List public participants as a compact summary. Set detail=true for the fuller record; use get_participant for one profile.",
       inputSchema: EventInput.merge(PagingInput).extend({
         query: z.string().optional(),
         detail: z.boolean().default(false)
@@ -123,7 +130,8 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
     "get_organisation",
     {
       title: "Get B2match organisation",
-      description: "Fetch an organisation/participation page. Resolves the menu path automatically; pass path to override.",
+      description:
+        "Fetch an organisation/participation page. Resolves the menu path automatically; pass path to override.",
       inputSchema: EventInput.extend({
         participation_id: z.string(),
         path: z.string().optional()
@@ -148,7 +156,8 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
     "get_opportunity",
     {
       title: "Get B2match opportunity",
-      description: "Fetch a marketplace opportunity. Resolves the marketplace menu path automatically; pass path to override.",
+      description:
+        "Fetch a marketplace opportunity. Use the id or url from list_opportunities (published marketplace ids differ from opportunity ids on my_participation). Resolves the marketplace menu path automatically; pass path to override.",
       inputSchema: EventInput.extend({
         opportunity_id: z.string(),
         path: z.string().optional()
@@ -171,7 +180,8 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
     "get_agenda",
     {
       title: "Get B2match agenda",
-      description: "Fetch agenda sessions and networking blocks. Resolves the menu path automatically; pass path to override.",
+      description:
+        "Fetch agenda sessions and networking blocks. Resolves the menu path automatically; pass path to override.",
       inputSchema: EventInput.extend({ path: z.string().optional() }).shape,
       annotations: readOnlyAnnotations
     },
@@ -229,7 +239,8 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
     "my_schedule",
     {
       title: "Get my B2match schedule",
-      description: "Fetch the authenticated viewer's event schedule. The PDF agenda URL is omitted unless include_pdf_link is true.",
+      description:
+        "Fetch the authenticated viewer's event schedule. The PDF agenda URL is omitted unless include_pdf_link is true.",
       inputSchema: EventInput.extend({ include_pdf_link: z.boolean().default(false) }).shape,
       annotations: readOnlyAnnotations
     },
@@ -250,15 +261,17 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
       }).shape,
       annotations: readOnlyAnnotations
     },
-    authTool(async ({
-      event,
-      status,
-      detail
-    }: {
-      event: string;
-      status?: "accepted" | "receivedInvitations" | "sentInvitations" | "canceled";
-      detail?: boolean;
-    }) => api.myMeetings(event, status, detail))
+    authTool(
+      async ({
+        event,
+        status,
+        detail
+      }: {
+        event: string;
+        status?: "accepted" | "receivedInvitations" | "sentInvitations" | "canceled";
+        detail?: boolean;
+      }) => api.myMeetings(event, status, detail)
+    )
   );
 
   server.registerTool(
@@ -288,24 +301,25 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
       }).shape,
       annotations: readOnlyAnnotations
     },
-    authTool(async ({
-      event,
-      participant_ids,
-      day,
-      duration,
-      is_long_term_networking
-    }: {
-      event: string;
-      participant_ids: string[];
-      day?: string;
-      duration?: string;
-      is_long_term_networking?: boolean;
-    }) =>
-      api.findMeetingSlots(event, participant_ids, {
+    authTool(
+      async ({
+        event,
+        participant_ids,
         day,
         duration,
-        isLongTermNetworking: is_long_term_networking
-      })
+        is_long_term_networking
+      }: {
+        event: string;
+        participant_ids: string[];
+        day?: string;
+        duration?: string;
+        is_long_term_networking?: boolean;
+      }) =>
+        api.findMeetingSlots(event, participant_ids, {
+          day,
+          duration,
+          isLongTermNetworking: is_long_term_networking
+        })
     )
   );
 
@@ -338,16 +352,17 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
     "get_conversation",
     {
       title: "Get B2match conversation",
-      description:
-        `Fetch conversation messages. B2match marks that conversation as read when messagesV2 is fetched, even though this client never sends MarkConversationAsSeen. Disabled unless ${SIDE_EFFECT_READS_ENV}=1 and acknowledge_marks_read is true. Use list_conversations for last-message previews. Unknown ids return a not-found error.`,
+      description: `Fetch conversation messages. B2match marks that conversation as read when messagesV2 is fetched, even though this client never sends MarkConversationAsSeen. Disabled unless ${SIDE_EFFECT_READS_ENV}=1 and acknowledge_marks_read is true. Use list_conversations for last-message previews. Unknown ids return a not-found error.`,
       inputSchema: z.object({
         conversation_id: z.string().uuid(),
         acknowledge_marks_read: z
           .boolean()
           .default(false)
-          .describe("Required with B2MATCH_ALLOW_SIDE_EFFECT_READS=1; fetching messages marks the conversation as read.")
+          .describe(
+            "Required with B2MATCH_ALLOW_SIDE_EFFECT_READS=1; fetching messages marks the conversation as read."
+          )
       }).shape,
-      annotations: readOnlyAnnotations
+      annotations: { ...readOnlyAnnotations, idempotentHint: false }
     },
     async ({
       conversation_id,
@@ -378,15 +393,16 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
     "list_notifications",
     {
       title: "List B2match notifications",
-      description:
-        `Returns unread/unseen notification counters by default. Fetching the notification list resets B2match's unseen counter (unseen goes to 0) even though this client never sends ReadNotification. The unread counter is unchanged. The full list requires ${SIDE_EFFECT_READS_ENV}=1 and acknowledge_marks_seen=true.`,
+      description: `Returns unread/unseen notification counters by default. Fetching the notification list resets B2match's unseen counter (unseen goes to 0) even though this client never sends ReadNotification. The unread counter is unchanged. The full list requires ${SIDE_EFFECT_READS_ENV}=1 and acknowledge_marks_seen=true.`,
       inputSchema: EventInput.merge(PagingInput).extend({
         acknowledge_marks_seen: z
           .boolean()
           .default(false)
-          .describe("Required with B2MATCH_ALLOW_SIDE_EFFECT_READS=1 to fetch the full list; that request resets unseen.")
+          .describe(
+            "Required with B2MATCH_ALLOW_SIDE_EFFECT_READS=1 to fetch the full list; that request resets unseen."
+          )
       }).shape,
-      annotations: readOnlyAnnotations
+      annotations: { ...readOnlyAnnotations, idempotentHint: false }
     },
     async ({
       event,
@@ -422,8 +438,7 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
       "graphql_read",
       {
         title: "Raw read-only B2match GraphQL",
-        description:
-          `Run a raw B2match GraphQL query. Disabled unless B2MATCH_ALLOW_RAW=1. Rejects mutations, subscriptions, and queries that select messagesV2 or the notifications list unless ${SIDE_EFFECT_READS_ENV}=1.`,
+        description: `Run a raw B2match GraphQL query. Disabled unless B2MATCH_ALLOW_RAW=1. Rejects mutations, subscriptions, and queries that select messagesV2 or the notifications list unless ${SIDE_EFFECT_READS_ENV}=1.`,
         inputSchema: z.object({
           query: z.string(),
           variables: z.record(z.string(), z.unknown()).default({}),

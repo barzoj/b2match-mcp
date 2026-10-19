@@ -14,10 +14,7 @@ async function main(): Promise<void> {
   }
 
   const program = new Command();
-  program
-    .name("b2match-mcp")
-    .description("Read-only MCP server and login helper for B2match")
-    .version("0.1.0");
+  program.name("b2match-mcp").description("Read-only MCP server and login helper for B2match").version("0.1.0");
 
   program
     .command("login")

@@ -19,11 +19,7 @@ const BLOCKED_OPERATION_NAMES = new Set([
   "RequestConfirmEmail"
 ]);
 
-const AUTH_MUTATION_NAMES = new Set([
-  "LogIn",
-  "RequestMagicLoginToken",
-  "ConfirmMagicLogin"
-]);
+const AUTH_MUTATION_NAMES = new Set(["LogIn", "RequestMagicLoginToken", "ConfirmMagicLogin"]);
 
 export class UnsafeGraphQLOperationError extends Error {
   constructor(message: string) {
@@ -36,10 +32,7 @@ export interface ReadOnlyValidationOptions {
   allowAuthMutations?: boolean;
 }
 
-export function assertReadOnlyGraphQL(
-  documentText: string,
-  options: ReadOnlyValidationOptions = {}
-): void {
+export function assertReadOnlyGraphQL(documentText: string, options: ReadOnlyValidationOptions = {}): void {
   const document = parse(documentText);
 
   for (const definition of document.definitions) {
@@ -51,9 +44,7 @@ export function assertReadOnlyGraphQL(
     const operationName = operation.name?.value;
 
     if (operationName && BLOCKED_OPERATION_NAMES.has(operationName)) {
-      throw new UnsafeGraphQLOperationError(
-        `Blocked GraphQL operation "${operationName}" is not read-only.`
-      );
+      throw new UnsafeGraphQLOperationError(`Blocked GraphQL operation "${operationName}" is not read-only.`);
     }
 
     if (operation.operation === "query") {
@@ -69,9 +60,7 @@ export function assertReadOnlyGraphQL(
       continue;
     }
 
-    throw new UnsafeGraphQLOperationError(
-      `Only GraphQL query operations are allowed; got ${operation.operation}.`
-    );
+    throw new UnsafeGraphQLOperationError(`Only GraphQL query operations are allowed; got ${operation.operation}.`);
   }
 }
 

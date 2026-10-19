@@ -23,10 +23,7 @@ describe("browser discovery and launch args", () => {
 
     const apps = findMacBrowserApps((path) => existing.has(path), "/Users/example");
 
-    expect(apps).toEqual([
-      "/Applications/Brave Browser.app",
-      "/Users/example/Applications/Google Chrome.app"
-    ]);
+    expect(apps).toEqual(["/Applications/Brave Browser.app", "/Users/example/Applications/Google Chrome.app"]);
     expect(macAppExecutable(apps[1], (path) => existing.has(path))).toBe(
       "/Users/example/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
     );
@@ -102,9 +99,9 @@ describe("readBrowserCookies", () => {
     });
 
     try {
-      await expect(
-        readBrowserCookies(browser.url, { resolvePageDebuggerUrl: async () => page.url })
-      ).resolves.toEqual([{ name: AUTH_COOKIE_FALLBACK, value: "page-token", domain: ".b2match.com" }]);
+      await expect(readBrowserCookies(browser.url, { resolvePageDebuggerUrl: async () => page.url })).resolves.toEqual([
+        { name: AUTH_COOKIE_FALLBACK, value: "page-token", domain: ".b2match.com" }
+      ]);
       expect(methods).toEqual([BROWSER_TARGET_COOKIE_METHOD, PAGE_TARGET_COOKIE_METHOD]);
     } finally {
       await page.close();
