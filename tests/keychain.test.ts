@@ -96,9 +96,7 @@ describe("macOS security command construction", () => {
       stderr: "write failed: denied"
     }));
 
-    await expect(new MacOSKeychainBackend(runner).set(secret)).rejects.toThrow(
-      /exit 1.*stderr=write failed: denied/
-    );
+    await expect(new MacOSKeychainBackend(runner).set(secret)).rejects.toThrow(/exit 1.*stderr=write failed: denied/);
     await expect(new MacOSKeychainBackend(runner).set(secret)).rejects.not.toThrow(/super-secret/);
   });
 });

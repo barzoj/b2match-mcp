@@ -73,7 +73,8 @@ export function isExpired(expiresAt?: string, skewMs = 60_000): boolean {
   return new Date(expiresAt).getTime() <= Date.now() + skewMs;
 }
 
-const KEYCHAIN_REREAD_HINT = "Re-run `b2match-mcp login` (or `login --paste`). If it keeps failing, set B2MATCH_MCP_DISABLE_KEYCHAIN=1 and try again.";
+const KEYCHAIN_REREAD_HINT =
+  "Re-run `b2match-mcp login` (or `login --paste`). If it keeps failing, set B2MATCH_MCP_DISABLE_KEYCHAIN=1 and try again.";
 
 export class AuthStore {
   constructor(
