@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Release Please updates this file from Conventional Commits when a release is cut.
 
+## [0.1.1](https://github.com/barzoj/b2match-mcp/compare/v0.1.0...v0.1.1) (2026-10-19)
+
+
+### Bug Fixes
+
+* **auth:** fall back to file token when keychain item is unreadable ([#14](https://github.com/barzoj/b2match-mcp/issues/14)) ([a465844](https://github.com/barzoj/b2match-mcp/commit/a4658448cfbcd4f798a3a59c85066446b45d155f))
+* **auth:** store macOS keychain secret correctly and surface keychain read errors ([#12](https://github.com/barzoj/b2match-mcp/issues/12)) ([f76f9b8](https://github.com/barzoj/b2match-mcp/commit/f76f9b8e99ee9438e82a8669717285d0a453b13e))
+
+
+### Miscellaneous Chores
+
+* remove first-release release-as pin ([#10](https://github.com/barzoj/b2match-mcp/issues/10)) ([6e5054a](https://github.com/barzoj/b2match-mcp/commit/6e5054a070983a50f7db125e1f573c640e3d77c7))
+
 ## [0.1.0](https://github.com/barzoj/b2match-mcp/compare/v0.1.0...v0.1.0) (2026-10-19)
 
 
