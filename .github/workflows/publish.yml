@@ -21,7 +21,19 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: npm ci
       - run: npm run prepublishOnly
+      - name: Skip if version already on npm
+        id: published
+        run: |
+          NAME="$(node -p "require('./package.json').name")"
+          VERSION="$(node -p "require('./package.json').version")"
+          if npm view "${NAME}@${VERSION}" version >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Package ${NAME}@${VERSION} already published; skipping npm publish."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Publish
+        if: steps.published.outputs.exists != 'true'
         run: npm publish --provenance --access public
         env:
           # Preferred: npm trusted publishing (OIDC). Fallback: repository secret NPM_TOKEN.
