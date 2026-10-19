@@ -228,7 +228,8 @@ export function pickTokenFromUrls(urls: string[], euid?: string): string | undef
       continue;
     }
     const host = url.hostname.toLowerCase();
-    const isB2match = host === "b2match.com" || host.endsWith(".b2match.com") || host.endsWith(".b2match.io");
+    const isB2matchCom = host === "b2match.com" || host.endsWith(".b2match.com");
+    const isB2match = isB2matchCom || host.endsWith(".b2match.io");
     if (!isB2match || host === "api.b2match.com") {
       continue;
     }
@@ -236,7 +237,7 @@ export function pickTokenFromUrls(urls: string[], euid?: string): string | undef
     if (!token || token.split(".").length !== 3) {
       continue;
     }
-    if (euid && host.endsWith("b2match.com") && !url.pathname.toLowerCase().startsWith(`/e/${euid.toLowerCase()}`)) {
+    if (euid && isB2matchCom && !url.pathname.toLowerCase().startsWith(`/e/${euid.toLowerCase()}`)) {
       continue;
     }
     return token;
