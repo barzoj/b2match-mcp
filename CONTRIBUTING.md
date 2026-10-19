@@ -73,8 +73,6 @@ npm publish --provenance --access public
 
 `.github/workflows/publish.yml` is `workflow_dispatch` only, for a manual republish.
 
-`release-please-config.json` currently sets `"release-as": "0.1.0"` so the first release is 0.1.0. Remove that field after the first release so later versions follow Conventional Commits.
-
 Do not publish from a laptop with a long-lived token unless you are recovering from a broken trusted-publisher setup.
 
 ## Before opening a PR

@@ -247,7 +247,7 @@ The smoke test is skipped unless both environment variables are set.
 
 ## Publishing
 
-Releases are cut by Release Please from Conventional Commits on `main`. The same workflow (`.github/workflows/release-please.yml`) publishes with `npm publish --provenance --access public` when a release is created. Provenance requires a public repo. Configure npm trusted publishing against `release-please.yml`. `NPM_TOKEN` is a documented fallback only. `.github/workflows/publish.yml` is a manual republish trigger. After the first 0.1.0 release, remove `"release-as": "0.1.0"` from `release-please-config.json`.
+Releases are cut by Release Please from Conventional Commits on `main`. The same workflow (`.github/workflows/release-please.yml`) publishes with `npm publish --provenance --access public` when a release is created. Provenance requires a public repo. Configure npm trusted publishing against `release-please.yml`. `NPM_TOKEN` is a documented fallback only. `.github/workflows/publish.yml` is a manual republish trigger.
 
 ## Verification status
 
