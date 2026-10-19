@@ -1,0 +1,61 @@
+{
+  "name": "b2match-mcp",
+  "version": "0.1.0",
+  "description": "Read-only MCP server for the B2match event and matchmaking platform",
+  "type": "module",
+  "main": "dist/cli.js",
+  "types": "dist/cli.d.ts",
+  "bin": {
+    "b2match-mcp": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CONTRIBUTING.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:smoke": "B2MATCH_LIVE_SMOKE=1 vitest run tests/live-smoke.test.ts",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/barzoj/b2match-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "b2match",
+    "matchmaking",
+    "events"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "bugs": {
+    "url": "https://github.com/barzoj/b2match-mcp/issues"
+  },
+  "homepage": "https://github.com/barzoj/b2match-mcp#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "commander": "^15.0.0",
+    "graphql": "^17.0.2",
+    "ws": "^8.22.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/ws": "^8.18.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

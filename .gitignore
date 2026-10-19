@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+*.tgz
+
+# Local B2match auth/config artifacts.
+auth.json
+.b2match-mcp/
+b2match-mcp/
+browser-profile/
+*.token
+
