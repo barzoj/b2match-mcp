@@ -10,6 +10,7 @@ import {
   assertReadOnlyGraphQL,
   UnsafeGraphQLOperationError
 } from "./queryGuard.js";
+import { packageName, packageVersion } from "./packageVersion.js";
 import { EventInput, PagingInput, authErrorResult, errorResult, notFoundResult, textResult } from "./tooling.js";
 
 const readOnlyAnnotations = {
@@ -23,8 +24,8 @@ export function createMcpServer(authStore = new AuthStore()): McpServer {
   const client = new B2matchClient(authStore);
   const api = new B2matchApi(client);
   const server = new McpServer({
-    name: "b2match-mcp",
-    version: "0.1.0"
+    name: packageName(),
+    version: packageVersion()
   });
 
   const authTool =
