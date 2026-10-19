@@ -162,10 +162,11 @@ rm -rf ~/.config/b2match-mcp/browser-profile
 
 ### Storage locations
 
-- macOS: login Keychain via `/usr/bin/security` (`b2match-mcp` service, `default` account).
+- macOS: login Keychain via `/usr/bin/security` (`b2match-mcp` service, `default` account). After each save the CLI reads the item back; if the secret is missing or wrong it falls back to the private file and prints `keychain read-back failed, stored in file`.
 - Linux: `secret-tool` / libsecret when installed and unlocked.
 - Windows: private fallback file.
 - Fallback file: `$B2MATCH_MCP_CONFIG_DIR/auth.json`, `$XDG_CONFIG_HOME/b2match-mcp/auth.json`, or `~/.config/b2match-mcp/auth.json`, written with `0600` permissions.
+- `b2match-mcp status` reports `source: "keychain-unreadable"` (with a re-login hint) when a Keychain item exists but is empty or unreadable, instead of pretending you are logged out with `source: "none"`.
 - Dedicated browser profile: `~/.config/b2match-mcp/browser-profile` (same config directory).
 
 If a token is a JWT, the CLI records its `exp` claim as `expiresAt`. B2match also has opaque tokens, in which case lifetime cannot be known locally. A 401 on an authenticated viewer check is reported as invalid/expired and remembered for the process. Public tools then continue anonymously without deleting the stored token.
@@ -176,6 +177,7 @@ If a token is a JWT, the CLI records its `exp` claim as `expiresAt`. B2match als
 - **Google blocks the window:** finish sign-in in the dedicated window if possible; otherwise use `--paste`.
 - **Timeout / 404 after Google:** the CLI also reads a JWT from the event tab URL if Chrome 404s before a cookie is set. Finish sign-in and wait; or use `--paste`.
 - **Keychain prompt denied:** run `b2match-mcp logout`, then `login` again and approve the prompt; or set `B2MATCH_MCP_DISABLE_KEYCHAIN=1` to use the private file fallback.
+- **`status` shows `keychain-unreadable`:** the Keychain item is empty or corrupt. Run `b2match-mcp logout` then `login` again. If it keeps failing, set `B2MATCH_MCP_DISABLE_KEYCHAIN=1` before login to force the file fallback.
 - **Wrong/expired token:** run `b2match-mcp logout`, sign in again, and repeat `login`.
 
 ## Tools

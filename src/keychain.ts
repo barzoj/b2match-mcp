@@ -50,7 +50,8 @@ export const runCommand: CommandRunner = (command, args, input) =>
 export function macOSSecurityCommands(service = KEYCHAIN_SERVICE, account = KEYCHAIN_ACCOUNT) {
   return {
     get: ["/usr/bin/security", ["find-generic-password", "-s", service, "-a", account, "-w"]] as const,
-    set: ["/usr/bin/security", ["add-generic-password", "-U", "-s", service, "-a", account]] as const,
+    /** Interactive mode: the add-generic-password line (with -X hex) is written on stdin. */
+    set: ["/usr/bin/security", ["-i"]] as const,
     delete: ["/usr/bin/security", ["delete-generic-password", "-s", service, "-a", account]] as const
   };
 }
@@ -61,6 +62,56 @@ export function linuxSecretToolCommands(service = KEYCHAIN_SERVICE, account = KE
     set: ["secret-tool", ["store", "--label", service, "service", service, "account", account]] as const,
     delete: ["secret-tool", ["clear", "service", service, "account", account]] as const
   };
+}
+
+/** Hex-encode UTF-8 for `security add-generic-password -X`. */
+export function encodeSecretForKeychain(secret: string): string {
+  return Buffer.from(secret, "utf8").toString("hex");
+}
+
+/**
+ * Decode `security find-generic-password -w` output.
+ * When the password is non-printable, security prints hex; otherwise it prints the raw string.
+ * Trim a single trailing newline only.
+ */
+export function decodeKeychainPassword(stdout: string): string {
+  const trimmed = stripTrailingNewline(stdout);
+  if (!trimmed) {
+    return "";
+  }
+
+  if (looksLikeJson(trimmed)) {
+    return trimmed;
+  }
+
+  if (/^[0-9a-fA-F]+$/.test(trimmed) && trimmed.length % 2 === 0) {
+    try {
+      return Buffer.from(trimmed, "hex").toString("utf8");
+    } catch {
+      return trimmed;
+    }
+  }
+
+  return trimmed;
+}
+
+function looksLikeJson(value: string): boolean {
+  const first = value[0];
+  if (first !== "{" && first !== "[") {
+    return false;
+  }
+  try {
+    JSON.parse(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function formatKeychainCommandError(result: CommandResult, fallback: string): string {
+  const stderr = result.stderr.trim();
+  const detail = stderr ? `stderr=${stderr}` : "stderr=<empty>";
+  return `${fallback} (exit ${result.code ?? "null"}; ${detail})`;
 }
 
 export class MacOSKeychainBackend implements SecretBackend {
@@ -75,28 +126,45 @@ export class MacOSKeychainBackend implements SecretBackend {
   async get(): Promise<string | null> {
     const [command, args] = macOSSecurityCommands(this.service, this.account).get;
     const result = await this.runner(command, [...args]);
-    if (result.code === 44 || /could not be found/i.test(result.stderr)) {
+    if (result.code === 44) {
+      return null;
+    }
+    // Only treat "not found" stderr when the process actually failed.
+    if (result.code !== 0 && /could not be found/i.test(result.stderr)) {
       return null;
     }
     if (result.code !== 0) {
-      throw new Error(cleanCommandError(result.stderr, "macOS Keychain read failed"));
+      throw new Error(formatKeychainCommandError(result, "macOS Keychain read failed"));
     }
-    return stripTrailingNewline(result.stdout);
+    return decodeKeychainPassword(result.stdout);
   }
 
   async set(secret: string): Promise<void> {
+    const hex = encodeSecretForKeychain(secret);
+    // service/account are fixed safe tokens (KEYCHAIN_* constants).
+    const script = `add-generic-password -U -s ${this.service} -a ${this.account} -X ${hex}\n`;
     const [command, args] = macOSSecurityCommands(this.service, this.account).set;
-    const result = await this.runner(command, [...args], `${secret}\n`);
+    const result = await this.runner(command, [...args], script);
     if (result.code !== 0) {
-      throw new Error(cleanCommandError(result.stderr, "macOS Keychain write failed"));
+      throw new Error(formatKeychainCommandError(result, "macOS Keychain write failed"));
+    }
+    const stderr = result.stderr.trim();
+    if (stderr && /error|failed|denied|unable/i.test(stderr)) {
+      throw new Error(formatKeychainCommandError(result, "macOS Keychain write failed"));
     }
   }
 
   async delete(): Promise<void> {
     const [command, args] = macOSSecurityCommands(this.service, this.account).delete;
     const result = await this.runner(command, [...args]);
-    if (result.code !== 0 && result.code !== 44 && !/could not be found/i.test(result.stderr)) {
-      throw new Error(cleanCommandError(result.stderr, "macOS Keychain delete failed"));
+    if (result.code === 44) {
+      return;
+    }
+    if (result.code !== 0 && /could not be found/i.test(result.stderr)) {
+      return;
+    }
+    if (result.code !== 0) {
+      throw new Error(formatKeychainCommandError(result, "macOS Keychain delete failed"));
     }
   }
 }
@@ -123,7 +191,7 @@ export class LinuxSecretToolBackend implements SecretBackend {
     const [command, args] = linuxSecretToolCommands(this.service, this.account).set;
     const result = await this.runner(command, [...args], `${secret}\n`);
     if (result.code !== 0) {
-      throw new Error(cleanCommandError(result.stderr, "secret-tool write failed"));
+      throw new Error(formatKeychainCommandError(result, "secret-tool write failed"));
     }
   }
 
@@ -179,9 +247,4 @@ function commandExistsOnPath(command: string): boolean {
 
 function stripTrailingNewline(value: string): string {
   return value.replace(/\r?\n$/, "");
-}
-
-function cleanCommandError(stderr: string, fallback: string): string {
-  const message = stderr.trim();
-  return message || fallback;
 }
