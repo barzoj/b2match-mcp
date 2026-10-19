@@ -4,6 +4,7 @@ import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { AuthStore } from "./auth.js";
 import { loginFromHiddenPrompt, loginWithDedicatedBrowser, logoutLocal } from "./login.js";
+import { packageVersion } from "./packageVersion.js";
 import { runStdioServer } from "./server.js";
 
 async function main(): Promise<void> {
@@ -14,7 +15,10 @@ async function main(): Promise<void> {
   }
 
   const program = new Command();
-  program.name("b2match-mcp").description("Read-only MCP server and login helper for B2match").version("0.1.0");
+  program
+    .name("b2match-mcp")
+    .description("Read-only MCP server and login helper for B2match")
+    .version(packageVersion());
 
   program
     .command("login")

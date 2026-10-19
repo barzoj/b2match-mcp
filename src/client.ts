@@ -4,6 +4,7 @@ import { parseEventIdentifier } from "./eventIdentifier.js";
 import { loginUsage } from "./invocation.js";
 import { EVENT_BY_EUID, EVENT_ID_LOOKUP } from "./queries.js";
 import { assertNoUnacknowledgedSideEffectReads, assertReadOnlyGraphQL } from "./queryGuard.js";
+import { userAgent } from "./packageVersion.js";
 
 const API_URL = "https://api.b2match.com/v4/query";
 const CACHE_TTL_MS = 60_000;
@@ -157,7 +158,7 @@ export class B2matchClient {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "User-Agent": "b2match-mcp/0.1.0",
+        "User-Agent": userAgent(),
         "X-App": "event-next-client",
         "X-b2match-Language": "en",
         "X-Event-Route-Prefix": "/e",
