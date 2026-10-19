@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Release Please updates this file from Conventional Commits when a release is cut.
 
+## [0.1.2](https://github.com/barzoj/b2match-mcp/compare/v0.1.1...v0.1.2) (2026-10-19)
+
+
+### Bug Fixes
+
+* **cli:** report the installed package version ([#17](https://github.com/barzoj/b2match-mcp/issues/17)) ([eb92774](https://github.com/barzoj/b2match-mcp/commit/eb92774ece0dd6fc854208950379395058349d7c))
+
 ## [0.1.1](https://github.com/barzoj/b2match-mcp/compare/v0.1.0...v0.1.1) (2026-10-19)
 
 
