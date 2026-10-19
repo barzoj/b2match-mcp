@@ -1,7 +1,8 @@
 name: Publish to npm
 
-# Manual republish only. Automatic publishes run from release-please.yml
-# (a GitHub Release created with GITHUB_TOKEN does not trigger this workflow).
+# Manual republish from the default branch tip only.
+# Preferred path for tagged releases: workflow_dispatch on release-please.yml
+# with publish_tag=vX.Y.Z (npm trusted publisher is bound to that workflow file).
 on:
   workflow_dispatch:
 
@@ -12,6 +13,9 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v6
@@ -19,6 +23,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
           registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@latest
+      - run: npm --version
       - run: npm ci
       - run: npm run prepublishOnly
       - name: Skip if version already on npm
@@ -34,7 +40,5 @@ jobs:
           fi
       - name: Publish
         if: steps.published.outputs.exists != 'true'
+        # OIDC trusted publishing only — do not set NODE_AUTH_TOKEN (even empty).
         run: npm publish --provenance --access public
-        env:
-          # Preferred: npm trusted publishing (OIDC). Fallback: repository secret NPM_TOKEN.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

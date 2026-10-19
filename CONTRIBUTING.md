@@ -69,9 +69,9 @@ The `Release Please` workflow (`.github/workflows/release-please.yml`) publishes
 npm publish --provenance --access public
 ```
 
-`--provenance` requires a **public** repository. Configure [npm trusted publishing](https://docs.npmjs.com/trusted-publishers) for GitHub Actions, repo `barzoj/b2match-mcp`, workflow `release-please.yml` (OIDC, `id-token: write`). If that is not configured, set a repository secret `NPM_TOKEN` as a fallback (`NODE_AUTH_TOKEN`).
+`--provenance` requires a **public** repository. Configure [npm trusted publishing](https://docs.npmjs.com/trusted-publishers) for GitHub Actions, repo `barzoj/b2match-mcp`, workflow `release-please.yml` (OIDC, `id-token: write`). Do not set `NODE_AUTH_TOKEN` (even empty). To publish an existing tag: `gh workflow run release-please.yml -f publish_tag=vX.Y.Z`.
 
-`.github/workflows/publish.yml` is `workflow_dispatch` only, for a manual republish.
+`.github/workflows/publish.yml` is `workflow_dispatch` only for tip-of-branch republish; tagged republishes use `release-please.yml` with `publish_tag`.
 
 Do not publish from a laptop with a long-lived token unless you are recovering from a broken trusted-publisher setup.
 
