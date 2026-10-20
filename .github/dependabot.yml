@@ -8,6 +8,10 @@ updates:
       # TypeScript majors (e.g. 7.x) break the build; upgrade them manually.
       - dependency-name: typescript
         update-types: ["version-update:semver-major"]
+      # @types/node follows the oldest supported runtime (engines: node >=20),
+      # so newer-Node typings don't let code use APIs Node 20 lacks.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       production-npm:
         dependency-type: production
