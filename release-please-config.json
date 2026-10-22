@@ -4,7 +4,19 @@
     ".": {
       "release-type": "node",
       "package-name": "b2match-mcp",
-      "changelog-path": "CHANGELOG.md"
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "server.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "server.json",
+          "jsonpath": "$.packages[0].version"
+        }
+      ]
     }
   },
   "include-component-in-tag": false
