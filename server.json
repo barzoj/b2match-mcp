@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.barzoj/b2match-mcp",
+  "title": "B2match (unofficial)",
+  "description": "Unofficial read-only B2match events: agenda, participants, meetings, schedule, conversations",
+  "repository": {
+    "url": "https://github.com/barzoj/b2match-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://github.com/barzoj/b2match-mcp#readme",
+  "version": "0.1.2",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "b2match-mcp",
+      "version": "0.1.2",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
