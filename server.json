@@ -8,13 +8,13 @@
     "source": "github"
   },
   "websiteUrl": "https://github.com/barzoj/b2match-mcp#readme",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "b2match-mcp",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "transport": {
         "type": "stdio"
       }

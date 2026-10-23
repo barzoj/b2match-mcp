@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Release Please updates this file from Conventional Commits when a release is cut.
 
+## [0.2.1](https://github.com/barzoj/b2match-mcp/compare/v0.2.0...v0.2.1) (2026-10-23)
+
+
+### Bug Fixes
+
+* clarify tool descriptions and parameters for agents ([#22](https://github.com/barzoj/b2match-mcp/issues/22)) ([5e840cf](https://github.com/barzoj/b2match-mcp/commit/5e840cf1c4aa2e3f9c0107040f07632c145d6104))
+* require Node.js 22 or newer ([#23](https://github.com/barzoj/b2match-mcp/issues/23)) ([dc51870](https://github.com/barzoj/b2match-mcp/commit/dc51870a93005f90b6b5060e3c9c0034a6544406))
+
 ## [0.2.0](https://github.com/barzoj/b2match-mcp/compare/v0.1.2...v0.2.0) (2026-10-22)
 
 
