@@ -25,7 +25,7 @@ This package is designed to be run locally by the user via `npx` and stdio MCP t
 
 ## Install / run
 
-Requires Node.js 20 or newer. On macOS with Apple Silicon, the recommended install path is `npx`; no native build step is required for the auth storage path.
+Requires Node.js 22 or newer. On macOS with Apple Silicon, the recommended install path is `npx`; no native build step is required for the auth storage path.
 
 ```bash
 npx -y b2match-mcp

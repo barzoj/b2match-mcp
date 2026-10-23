@@ -4,7 +4,7 @@ Thanks for helping improve `b2match-mcp`. Please also read the [Code of Conduct]
 
 ## Development
 
-Requires Node.js 20 or newer (see `.nvmrc`).
+Requires Node.js 22 or newer (see `.nvmrc`).
 
 ```bash
 npm install
