@@ -1,6 +1,6 @@
 {
   "name": "b2match-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "mcpName": "io.github.barzoj/b2match-mcp",
   "description": "Read-only MCP server for the B2match event and matchmaking platform",
   "type": "module",
