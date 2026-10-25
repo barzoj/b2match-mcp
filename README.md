@@ -5,6 +5,7 @@
 [![npm version](https://img.shields.io/npm/v/b2match-mcp)](https://www.npmjs.com/package/b2match-mcp)
 [![License: MIT](https://img.shields.io/npm/l/b2match-mcp)](LICENSE)
 [![Node.js](https://img.shields.io/node/v/b2match-mcp)](https://nodejs.org/)
+[![ToolSDK MCP Registry](https://badges.toolsdk.ai/badge/b2match-mcp)](https://toolsdk-ai.github.io/toolsdk-mcp-registry/#b2match-mcp)
 
 Read-only MCP server for the [B2match](https://www.b2match.com/) event and matchmaking platform.
 
