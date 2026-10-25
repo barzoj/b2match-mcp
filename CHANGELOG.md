@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Release Please updates this file from Conventional Commits when a release is cut.
 
+## [0.2.2](https://github.com/barzoj/b2match-mcp/compare/v0.2.1...v0.2.2) (2026-10-25)
+
+
+### Bug Fixes
+
+* **deps:** bump body-parser to 2.4.0 (GHSA-27r3-jxmh-p828) ([3e71615](https://github.com/barzoj/b2match-mcp/commit/3e7161550447e32ed5317ac4c422fa6c8c6956c4))
+
 ## [0.2.1](https://github.com/barzoj/b2match-mcp/compare/v0.2.0...v0.2.1) (2026-10-23)
 
 
