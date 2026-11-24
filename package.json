@@ -50,9 +50,11 @@
   },
   "homepage": "https://github.com/barzoj/b2match-mcp#readme",
   "dependencies": {
+    "@hono/node-server": "^2.1.8",
     "@modelcontextprotocol/sdk": "^1.32.1",
     "commander": "^15.0.0",
     "graphql": "^17.0.2",
+    "hono": "^4.13.18",
     "ws": "^8.22.0",
     "zod": "^4.6.7"
   },
