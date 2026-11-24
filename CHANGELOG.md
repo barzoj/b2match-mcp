@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Release Please updates this file from Conventional Commits when a release is cut.
 
+## [0.2.3](https://github.com/barzoj/b2match-mcp/compare/v0.2.2...v0.2.3) (2026-11-24)
+
+
+### Bug Fixes
+
+* **deps:** require hono 4.13.18 and @hono/node-server 2.1.8 ([#42](https://github.com/barzoj/b2match-mcp/issues/42)) ([7a6c721](https://github.com/barzoj/b2match-mcp/commit/7a6c721a37bf157cbdbb0acd866806a8192ae891))
+
 ## [0.2.2](https://github.com/barzoj/b2match-mcp/compare/v0.2.1...v0.2.2) (2026-10-25)
 
 
